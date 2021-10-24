@@ -327,6 +327,7 @@ body {
   padding: 0.7rem;
   word-wrap: break-word;
   text-transform: capitalize;
+  outline: none;
 }
 
 /* media query for main ticket container  */
