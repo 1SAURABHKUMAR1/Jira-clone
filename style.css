@@ -176,16 +176,16 @@ body {
   cursor: pointer;
 }
 
-.priority-color-red {
+.red {
   background-color: var(--priority-red);
 }
-.priority-color-yellow {
+.yellow {
   background-color: var(--priority-yellow);
 }
-.priority-color-green {
+.green {
   background-color: var(--priority-green);
 }
-.priority-color-blue {
+.blue {
   background-color: var(--priority-blue);
 }
 
@@ -276,21 +276,6 @@ body {
   border-radius: 0.4rem;
 }
 
-.input-box .priority-color-red {
-  background-color: var(--priority-red);
-}
-
-.input-box .priority-color-yellow {
-  background-color: var(--priority-yellow);
-}
-
-.input-box .priority-color-green {
-  background-color: var(--priority-green);
-}
-.input-box .priority-color-blue {
-  background-color: var(--priority-blue);
-}
-
 .active-priority-color {
   border: var(--dark-blue) solid 3px;
 }
@@ -319,12 +304,16 @@ body {
   background-color: var(--priority-blue);
 }
 
+.ticket-container .ticket-id-lock {
+  display: flex;
+}
+
 /* // upper bgc will change ticket color  */
 
-.ticket-container .ticket-id {
+.ticket-container .ticket-id-lock .ticket-id {
   color: var(--white);
   height: 10%;
-  width: 100%;
+  width: 90%;
   font-size: 0.9rem;
   padding-left: 0.4rem;
 }
