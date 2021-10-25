@@ -1,13 +1,14 @@
 // variables
 var createButton = document.querySelector(".tool-add");
 var deleteButton = document.querySelector('.tool-delete');
+var clearButton = document.querySelector('.tool-clear');
 var input_box = document.querySelector(".input-box");
 var mainTicketContainer = document.querySelector('.main-ticket-container');
 var inputTextarea = document.querySelector('.input-text-area');
 var allPriorityColorInput = document.querySelectorAll('.single-priority-color');
 
-var ticketColors = ["blue", "green", "yellow", "red"];
-var defaultTicketColors = ticketColors[ticketColors.length - 1];
+var ticketColors = ["red", "yellow", "green", "blue"];
+var defaultTicketColors = ticketColors[0];
 var addTicket = false;
 var removeTicket = false;
 
@@ -40,6 +41,12 @@ createButton.addEventListener('click', () => {
         input_box.style.display = 'none';
         inputTextarea.value = '';
     }
+})
+
+// an event listener to clear all tickets
+clearButton.addEventListener('click', () => {
+    var listTickets = document.querySelectorAll('.ticket-container');
+    listTickets.forEach(element => element.remove());
 })
 
 // a event lisetener to add new ticket
@@ -77,6 +84,7 @@ function createNewTicket(ticketColor, ticketID, ticketTask) {
     handleDeleteTicket(newTicket);
     handleLock(newTicket);
     copyTicketTaskClipboard(newTicket);
+    handleColorTicket(newTicket);
 }
 
 // generate new unique id 
@@ -119,4 +127,25 @@ function copyTicketTaskClipboard(ticket) {
         document.execCommand("copy");
         window.getSelection().removeAllRanges();
     })
+}
+
+// // a function to handle color
+function handleColorTicket(ticket) {
+    let colorArea = ticket.querySelector('.ticket-id-lock');
+
+    colorArea.addEventListener('click', () => {
+        let ticketColorCurrent = ticket.style.backgroundColor; // take ticket color
+        ticketColorCurrent = ticketColorCurrent.replace(/[^a-zA-Z ]/g, "").slice(11); // slice color from it
+        let indexCurrentColor = ticketColors.findIndex((element) => element === ticketColorCurrent); // find color from array
+        indexCurrentColor++; // increment the color
+        let newTicketColor = ticketColors[indexCurrentColor % ticketColors.length]; // capture new color if out of bount modulo
+        ticket.style.backgroundColor = `var(--priority-${newTicketColor})`; // apply color to it    
+    })
+    ticket.querySelector('.fa-copy').addEventListener('click', (event) => {
+        event.stopPropagation();
+    })
+    ticket.querySelector('.fa-lock').addEventListener('click', (event) => {
+        event.stopPropagation();
+    })
+
 }
