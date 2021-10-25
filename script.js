@@ -14,7 +14,7 @@ var removeTicket = false;
 
 // a event listner for each loop for selecting colors
 allPriorityColorInput.forEach((color, index) => {
-    color.addEventListener('click', (element) => {
+    color.addEventListener('click', () => {
         // remove priority color
         allPriorityColorInput.forEach((colorEach) => {
             colorEach.classList.remove('active-priority-color');
@@ -38,13 +38,14 @@ createButton.addEventListener('click', () => {
         input_box.style.display = 'flex';
     } else {
         input_box.style.display = 'none';
+        inputTextarea.value = '';
     }
 })
 
 // a event lisetener to add new ticket
 input_box.addEventListener('keydown', (e) => {
     let keyPressed = e.key;
-    if (keyPressed === "Shift" || keyPressed === "shift" || keyPressed === 16 || keyPressed === "AltGraph" || keyPressed === 18) {
+    if (keyPressed === "Shift" || keyPressed === "shift" || keyPressed === 16 || keyPressed === "AltGraph" || keyPressed === 18 || keyPressed === '$' || keyPressed === 52) {
         createNewTicket(defaultTicketColors, generateUnique(), inputTextarea.value);
         input_box.style.display = 'none';
         addTicket = !addTicket;
@@ -58,7 +59,6 @@ deleteButton.addEventListener('click', () => {
     removeTicket = !removeTicket;
 })
 
-
 // this function will create a new ticket
 function createNewTicket(ticketColor, ticketID, ticketTask) {
     let newTicket = document.createElement('div');
@@ -66,14 +66,17 @@ function createNewTicket(ticketColor, ticketID, ticketTask) {
     newTicket.style.backgroundColor = `var(--priority-${ticketColor})`;
     newTicket.innerHTML = `
     <div class="ticket-id-lock">
-                    <p class="ticket-id">#${ticketID}</p>
-                    <i class="fas fa-lock ticket-lock"></i>
-                </div>
+    <p class="ticket-id">#${ticketID}</p>
+    <i class="fas fa-copy"></i>
+    <i class="fas fa-lock ticket-lock"></i>
+    </div>
     <div class="task-area" contenteditable="false" spellcheck="false">${ticketTask}</div>
     `;
     mainTicketContainer.appendChild(newTicket);
 
     handleDeleteTicket(newTicket);
+    handleLock(newTicket);
+    copyTicketTaskClipboard(newTicket);
 }
 
 // generate new unique id 
@@ -89,9 +92,9 @@ function handleDeleteTicket(ticket) {
 }
 
 // function to handle lock and unlock of lock-icon
-function handleLock() {
-    let ticketLock = document.querySelector('.ticket-lock');
-    let ticketTask = document.querySelector('.task-area');
+function handleLock(ticket) {
+    let ticketLock = ticket.querySelector('.ticket-lock');
+    let ticketTask = ticket.querySelector('.task-area');
     ticketLock.addEventListener('click', () => {
         if (ticketLock.classList.contains('fa-lock')) {
             ticketLock.classList.remove('fa-lock');
@@ -104,4 +107,16 @@ function handleLock() {
         }
     })
 }
-handleLock();
+// function to copy text area
+function copyTicketTaskClipboard(ticket) {
+    var copyButton = ticket.querySelector('.fa-copy');
+    var textArea = ticket.querySelector('.task-area');
+    copyButton.addEventListener('click', () => {
+        var range = document.createRange();
+        range.selectNode(textArea);
+        window.getSelection().removeAllRanges();
+        window.getSelection().addRange(range);
+        document.execCommand("copy");
+        window.getSelection().removeAllRanges();
+    })
+}

@@ -308,6 +308,12 @@ body {
   display: flex;
 }
 
+.fas {
+  margin-right: 0.3rem;
+  color: #fff;
+  cursor: pointer;
+}
+
 /* // upper bgc will change ticket color  */
 
 .ticket-container .ticket-id-lock .ticket-id {
