@@ -16,6 +16,15 @@ var removeTicket = false;
 
 var ticketsArray = [];
 
+
+// reflect tickets if avilable on local storage
+if (localStorage.getItem('tickets')) {
+    ticketsArray = JSON.parse(localStorage.getItem('tickets'));
+    ticketsArray.forEach(element => {
+        createNewTicket(element.ticketColor, element.ticketID, element.ticketTask, false);
+    })
+}
+
 // a event listner for each loop for selecting colors
 allPriorityColorInput.forEach((color) => {
     color.addEventListener('click', () => {
@@ -50,8 +59,12 @@ createButton.addEventListener('click', () => {
 // an event listener to clear all tickets
 clearButton.addEventListener('click', () => {
     var listTickets = document.querySelectorAll('.ticket-container');
+    // remove all tickets
     listTickets.forEach(element => element.remove());
+    // reset array
     ticketsArray = [];
+    // reset local Storage
+    localStorage.clear();
 })
 
 // a event lisetener to add new ticket
@@ -107,6 +120,7 @@ allFilter.addEventListener('click', () => {
 
 // this function will create a new ticket
 function createNewTicket(ticketColor, ticketID, ticketTask, createNew) {
+
     let newTicket = document.createElement('div');
     newTicket.setAttribute('class', 'ticket-container')
     newTicket.style.backgroundColor = `var(--priority-${ticketColor})`;
@@ -129,12 +143,13 @@ function createNewTicket(ticketColor, ticketID, ticketTask, createNew) {
                 ticketID
             }
         );
+        manageLocalStorage();
     }
 
-    handleDeleteTicket(newTicket);
-    handleLock(newTicket);
+    handleDeleteTicket(newTicket, ticketID);
+    handleLock(newTicket, ticketID);
     copyTicketTaskClipboard(newTicket);
-    handleColorTicket(newTicket);
+    handleColorTicket(newTicket, ticketID);
 }
 
 // generate new unique id 
@@ -143,27 +158,43 @@ function generateUnique() {
 }
 
 // a function to handle deletion of ticket
-function handleDeleteTicket(ticket) {
-    if (removeTicket) {
+function handleDeleteTicket(ticket, id) {
+    ticket.addEventListener('click', () => {
+        if (!removeTicket) {
+            return;
+        }
+        // remove from page
+        ticket.remove();
 
-    }
+        // manage ticket array and local storage remove ticket
+        let ticketIndex = getTicketIndex(id);
+        ticketsArray.splice(ticketIndex, 1);
+        manageLocalStorage();
+    })
 }
-console.log(mainTicketContainer);
 
 // function to handle lock and unlock of lock-icon
-function handleLock(ticket) {
+function handleLock(ticket, id) {
     let ticketLock = ticket.querySelector('.ticket-lock');
-    let ticketTask = ticket.querySelector('.task-area');
+    let ticketTaskArea = ticket.querySelector('.task-area');
+
     ticketLock.addEventListener('click', () => {
+
         if (ticketLock.classList.contains('fa-lock')) {
             ticketLock.classList.remove('fa-lock');
             ticketLock.classList.add('fa-lock-open');
-            ticketTask.setAttribute('contenteditable', 'true');
+            ticketTaskArea.setAttribute('contenteditable', 'true');
+
         } else {
             ticketLock.classList.remove('fa-lock-open');
             ticketLock.classList.add('fa-lock');
-            ticketTask.setAttribute('contenteditable', 'false');
+            ticketTaskArea.setAttribute('contenteditable', 'false');
         }
+
+        // on modify data update local storage
+        let ticketIndex = getTicketIndex(id)
+        ticketsArray[ticketIndex].ticketTask = ticketTaskArea.innerText;
+        manageLocalStorage();
     })
 }
 // function to copy text area
@@ -181,16 +212,34 @@ function copyTicketTaskClipboard(ticket) {
 }
 
 // // a function to handle color
-function handleColorTicket(ticket) {
+function handleColorTicket(ticket, ID) {
     let colorArea = ticket.querySelector('.ticket-id-lock');
 
     colorArea.addEventListener('click', () => {
-        let ticketColorCurrent = ticket.style.backgroundColor; // take ticket color
-        ticketColorCurrent = ticketColorCurrent.replace(/[^a-zA-Z ]/g, "").slice(11); // slice color from it
-        let indexCurrentColor = ticketColors.findIndex((element) => element === ticketColorCurrent); // find color from array
+
+        // take ticket color
+        let ticketColorCurrent = ticket.style.backgroundColor;
+
+        // slice color from it
+        ticketColorCurrent = ticketColorCurrent.replace(/[^a-zA-Z ]/g, "").slice(11);
+        // find color from array
+
+        let indexCurrentColor = ticketColors.findIndex((element) => element === ticketColorCurrent);
         indexCurrentColor++; // increment the color
-        let newTicketColor = ticketColors[indexCurrentColor % ticketColors.length]; // capture new color if out of bount modulo
-        ticket.style.backgroundColor = `var(--priority-${newTicketColor})`; // apply color to it    
+
+        // capture new color if out of bount modulo
+        let newTicketColor = ticketColors[indexCurrentColor % ticketColors.length];
+
+        // apply color to it     
+        ticket.style.backgroundColor = `var(--priority-${newTicketColor})`;
+
+
+        // find index of ticket from array and modify it
+        let ticketIndex = getTicketIndex(ID);
+        ticketsArray[ticketIndex].ticketColor = newTicketColor;
+
+        // refresh local storgae
+        manageLocalStorage();
     })
     ticket.querySelector('.fa-copy').addEventListener('click', (event) => {
         event.stopPropagation();
@@ -198,6 +247,7 @@ function handleColorTicket(ticket) {
     ticket.querySelector('.fa-lock').addEventListener('click', (event) => {
         event.stopPropagation();
     })
+
 
 }
 
@@ -219,4 +269,14 @@ function resetInputBox() {
 
     // reset default color
     defaultTicketColors = ticketColors[0];
+}
+
+// a function to set localStorage
+function manageLocalStorage() {
+    localStorage.setItem('tickets', JSON.stringify(ticketsArray));
+}
+
+// a function to find ticket index via ticketId
+function getTicketIndex(Id) {
+    return ticketsArray.findIndex(element => element.ticketID === Id);
 }
