@@ -273,12 +273,21 @@ body {
 
 .input-box .single-priority-color {
   height: 75%;
-  width: 20%;
+  width: 16%;
   border-radius: 0.4rem;
 }
 
 .active-priority-color {
   border: var(--dark-blue) solid 3px;
+}
+
+.add-button {
+  width: 20%;
+  height: 75%;
+  border-radius: 0.4rem;
+  font-size: 1.1rem;
+  cursor: pointer;
+  background-color: var(--off-white-box-shadow);
 }
 
 /* main ticket container */

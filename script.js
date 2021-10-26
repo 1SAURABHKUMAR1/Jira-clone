@@ -1,5 +1,6 @@
 // variables
 var createButton = document.querySelector(".tool-add");
+var addButton = document.querySelector('.add-button');
 var deleteButton = document.querySelector('.tool-delete');
 var clearButton = document.querySelector('.tool-clear');
 var input_box = document.querySelector(".input-box");
@@ -65,6 +66,17 @@ clearButton.addEventListener('click', () => {
     ticketsArray = [];
     // reset local Storage
     localStorage.clear();
+})
+
+// evemt listener to add ticket
+addButton.addEventListener('click', () => {
+
+    if (inputTextarea.value != '') {
+        createNewTicket(defaultTicketColors, generateUnique(), inputTextarea.value, true);
+        addTicket = !addTicket;
+        resetInputBox();
+    }
+
 })
 
 // a event lisetener to add new ticket
