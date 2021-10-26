@@ -6,15 +6,18 @@ var input_box = document.querySelector(".input-box");
 var mainTicketContainer = document.querySelector('.main-ticket-container');
 var inputTextarea = document.querySelector('.input-text-area');
 var allPriorityColorInput = document.querySelectorAll('.single-priority-color');
+var filterColors = document.querySelectorAll('.priority-color-single');
+var allFilter = document.querySelector('.quick-filters');
 
 var ticketColors = ["red", "yellow", "green", "blue"];
 var defaultTicketColors = ticketColors[0];
 var addTicket = false;
 var removeTicket = false;
 
+var ticketsArray = [];
 
 // a event listner for each loop for selecting colors
-allPriorityColorInput.forEach((color, index) => {
+allPriorityColorInput.forEach((color) => {
     color.addEventListener('click', () => {
         // remove priority color
         allPriorityColorInput.forEach((colorEach) => {
@@ -37,6 +40,7 @@ createButton.addEventListener('click', () => {
 
     if (addTicket) {
         input_box.style.display = 'flex';
+        inputTextarea.focus();
     } else {
         input_box.style.display = 'none';
         inputTextarea.value = '';
@@ -47,27 +51,62 @@ createButton.addEventListener('click', () => {
 clearButton.addEventListener('click', () => {
     var listTickets = document.querySelectorAll('.ticket-container');
     listTickets.forEach(element => element.remove());
+    ticketsArray = [];
 })
 
 // a event lisetener to add new ticket
 input_box.addEventListener('keydown', (e) => {
     let keyPressed = e.key;
     if (keyPressed === "Shift" || keyPressed === "shift" || keyPressed === 16 || keyPressed === "AltGraph" || keyPressed === 18 || keyPressed === '$' || keyPressed === 52) {
-        createNewTicket(defaultTicketColors, generateUnique(), inputTextarea.value);
-        input_box.style.display = 'none';
-        addTicket = !addTicket;
-        inputTextarea.value = '';
+
+        if (inputTextarea.value != '') {
+            createNewTicket(defaultTicketColors, generateUnique(), inputTextarea.value, true);
+            addTicket = !addTicket;
+            resetInputBox();
+        }
 
     }
 })
 
-// a event listener on delet button
+// a event listener on delete button
 deleteButton.addEventListener('click', () => {
     removeTicket = !removeTicket;
 })
 
+// an event listener to filter according to colors
+for (let index = 0; index < filterColors.length; index++) {
+    filterColors[index].addEventListener('click', () => {
+        let currentFilterColors = filterColors[index].classList[1]; // current clicked color
+        const filteredTickets = ticketsArray.filter(element => element.ticketColor === currentFilterColors); // array of objects to of clicked color
+
+        // remove all tickets
+        let ticketsAll = document.querySelectorAll('.ticket-container');
+        ticketsAll.forEach(element => element.remove());
+
+        // reflect new tickets
+        filteredTickets.forEach(element => {
+            createNewTicket(element.ticketColor, element.ticketID, element.ticketTask, false);
+        })
+
+    })
+}
+
+// a function to show all tickets
+allFilter.addEventListener('click', () => {
+
+    // remove all tickets
+    let ticketsAll = document.querySelectorAll('.ticket-container');
+    ticketsAll.forEach(element => element.remove())
+
+    // reflect all tickets
+    ticketsArray.forEach(element => {
+        createNewTicket(element.ticketColor, element.ticketID, element.ticketTask, false);
+    })
+
+})
+
 // this function will create a new ticket
-function createNewTicket(ticketColor, ticketID, ticketTask) {
+function createNewTicket(ticketColor, ticketID, ticketTask, createNew) {
     let newTicket = document.createElement('div');
     newTicket.setAttribute('class', 'ticket-container')
     newTicket.style.backgroundColor = `var(--priority-${ticketColor})`;
@@ -80,6 +119,17 @@ function createNewTicket(ticketColor, ticketID, ticketTask) {
     <div class="task-area" contenteditable="false" spellcheck="false">${ticketTask}</div>
     `;
     mainTicketContainer.appendChild(newTicket);
+
+    // creaete ticket and push to array
+    if (createNew) {
+        ticketsArray.push(
+            {
+                ticketColor,
+                ticketTask,
+                ticketID
+            }
+        );
+    }
 
     handleDeleteTicket(newTicket);
     handleLock(newTicket);
@@ -95,9 +145,10 @@ function generateUnique() {
 // a function to handle deletion of ticket
 function handleDeleteTicket(ticket) {
     if (removeTicket) {
-        ticket.remove();
+
     }
 }
+console.log(mainTicketContainer);
 
 // function to handle lock and unlock of lock-icon
 function handleLock(ticket) {
@@ -148,4 +199,24 @@ function handleColorTicket(ticket) {
         event.stopPropagation();
     })
 
+}
+
+// function to reset color on input box
+function resetInputBox() {
+    allPriorityColorInput.forEach(element => {
+        // remove border
+        element.classList.remove('active-priority-color');
+    })
+
+    // add border to red
+    allPriorityColorInput[0].classList.add('active-priority-color');
+
+    // remove display
+    input_box.style.display = 'none';
+
+    // reset value of input box
+    inputTextarea.value = '';
+
+    // reset default color
+    defaultTicketColors = ticketColors[0];
 }

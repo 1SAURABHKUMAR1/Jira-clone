@@ -156,6 +156,7 @@ body {
 
 .toolbar .quick-filters {
   font-size: 0.9rem;
+  cursor: pointer;
 }
 
 .toolbar-priority-color .priority-color-main {
@@ -306,9 +307,10 @@ body {
 
 .ticket-container .ticket-id-lock {
   display: flex;
+  cursor: pointer;
 }
 
-.fas {
+.main-container .fas {
   margin-right: 0.3rem;
   color: #fff;
   cursor: pointer;
@@ -322,6 +324,7 @@ body {
   width: 90%;
   font-size: 0.9rem;
   padding-left: 0.4rem;
+  cursor: text;
 }
 
 .ticket-container .task-area {
